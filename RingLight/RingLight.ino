@@ -55,6 +55,8 @@ void loop() {
   setAllLEDsRainbow(0, 5);
   updateLEDs();
   delay(1000);
+  chaseTheLED(0, 200, 10, BLUE);
+  delay(1000);
 }
 
 void updateLEDs() {
@@ -62,6 +64,7 @@ void updateLEDs() {
   FastLED.delay(30);
 }
 
+// All LEDs functions
 void setAllLEDsColor(CHSV color) {
   fill_solid(leds, NUM_LEDS, color);
 //  for (int k = 0; k < 48; k++) {
@@ -70,12 +73,26 @@ void setAllLEDsColor(CHSV color) {
 }
 
 void setAllLEDsRainbow(uint8_t initialhue, uint8_t deltahue) {
-  fill_rainbow(leds, NUM_LEDS, initialhue, deltahue);
+  fill_rainbow(leds, NUM_LEDS, initialhue, deltahue); // May not work? Setting HSV to RGB...
+}
+
+void chaseTheLED(int startingLED, int msDelay, int howManyTimes, CHSV color) {
+  for (int i = startingLED; i < (howManyTimes * NUM_LEDS); i++) {
+    leds[i] = color;
+    updateLEDs();
+    FastLED.delay(msDelay);
+    leds[i] = OFF;
+  }
+}
+
+// Individual LED functions
+void setIndividualLED(int led, CHSV color) {
+  leds[led] = color;
 }
 
 // Individual ringlight functions
-void setRingLightHue(int whichLED, int hue) {
-  switch (whichLED) {
+void setRingLightHue(int whichLight, int hue) {
+  switch (whichLight) {
     case 1: 
       for (int i = 0; i < 24; i++) {
         leds[i] = CHSV(hue, led1_sat, led1_val);
@@ -91,8 +108,8 @@ void setRingLightHue(int whichLED, int hue) {
   }
 }
 
-void setRingLightSaturation(int whichLED, int saturation) {
-  switch (whichLED) {
+void setRingLightSaturation(int whichLight, int saturation) {
+  switch (whichLight) {
     case 1: 
       for (int i = 0; i < 24; i++) {
         leds[i] = CHSV(led1_hue, saturation, led1_val);
@@ -108,8 +125,8 @@ void setRingLightSaturation(int whichLED, int saturation) {
   }
 }
 
-void setRingLightValue(int whichLED, int value) {
-  switch (whichLED) {
+void setRingLightValue(int whichLight, int value) {
+  switch (whichLight) {
     case 1:
       for (int i = 0; i < 24; i++) {
         leds[i] = CHSV(led1_hue, led1_sat, value);
