@@ -40,9 +40,12 @@ void setup() {
   FastLED.addLeds<CHIPSET, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS); // Initializes leds
   setAllLEDsColor(OFF);
   updateLEDs();
+  Serial.begin(9600);
 }
 
 void loop() {
+  sequentialRainbow(10, 10);
+  delay(1000);
   setAllLEDsColor(RED);
   updateLEDs();
   delay(1000);
@@ -55,8 +58,12 @@ void loop() {
   setAllLEDsRainbow(0, 5);
   updateLEDs();
   delay(1000);
-  chaseTheLED(0, 200, 10, BLUE);
+  setAllLEDsColor(OFF);
+  updateLEDs();
   delay(1000);
+  chaseTheLED(0, 100, 10, BLUE);
+  delay(1000);
+
 }
 
 void updateLEDs() {
@@ -67,13 +74,21 @@ void updateLEDs() {
 // All LEDs functions
 void setAllLEDsColor(CHSV color) {
   fill_solid(leds, NUM_LEDS, color);
-//  for (int k = 0; k < 48; k++) {
-//    leds[k] = color;
-//  }
 }
 
 void setAllLEDsRainbow(uint8_t initialhue, uint8_t deltahue) {
-  fill_rainbow(leds, NUM_LEDS, initialhue, deltahue); // May not work? Setting HSV to RGB...
+  fill_rainbow(leds, NUM_LEDS, initialhue, deltahue);
+}
+
+void sequentialRainbow(uint8_t initialhue, uint8_t deltahue) {
+  uint8_t hue = initialhue + deltahue;
+  for (int i = 0; i < NUM_LEDS; i++) {
+    leds[i] = CHSV(hue, 255, 255);
+    updateLEDs();
+    delay(100);
+    Serial.println(hue);
+    hue += deltahue;
+  }
 }
 
 void chaseTheLED(int startingLED, int msDelay, int howManyTimes, CHSV color) {
