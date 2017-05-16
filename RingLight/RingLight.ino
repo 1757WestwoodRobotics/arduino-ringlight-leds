@@ -40,29 +40,20 @@ void setup() {
   FastLED.addLeds<CHIPSET, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS); // Initializes leds
   setAllLEDsColor(OFF);
   updateLEDs();
-  Serial.begin(9600);
 }
 
 void loop() {
-  sequentialRainbow(10, 10);
-  delay(1000);
-  setAllLEDsColor(RED);
-  updateLEDs();
-  delay(1000);
-  setAllLEDsColor(GREEN);
-  updateLEDs();
-  delay(1000);
-  setAllLEDsColor(BLUE);
-  updateLEDs();
-  delay(1000);
-  setAllLEDsRainbow(0, 5);
-  updateLEDs();
-  delay(1000);
-  setAllLEDsColor(OFF);
-  updateLEDs();
-  delay(1000);
-  chaseTheLED(0, 100, 10, BLUE);
-  delay(1000);
+    
+  sequentialRainbow(10, 10, 100);    delay(1000);
+  sequentialRainbow(25, 25, 100);    delay(1000);
+  sequentialRainbow(50, 5, 100);    delay(1000);
+  sequentialRainbow(10, 10, 100);    delay(3000);
+  setAllLEDsColor(RED);    delay(1000);
+  setAllLEDsColor(GREEN);    delay(1000);
+  setAllLEDsColor(BLUE);    delay(1000);
+  setAllLEDsColor(OFF);    delay(250);
+  chaseTheLED(0, 200, 10, BLUE);    delay(1000);
+  setAllLEDsRainbow(0, 5);    delay(1000);
 
 }
 
@@ -74,27 +65,27 @@ void updateLEDs() {
 // All LEDs functions
 void setAllLEDsColor(CHSV color) {
   fill_solid(leds, NUM_LEDS, color);
+  updateLEDs();
 }
 
 void setAllLEDsRainbow(uint8_t initialhue, uint8_t deltahue) {
   fill_rainbow(leds, NUM_LEDS, initialhue, deltahue);
+  updateLEDs();
 }
 
-void sequentialRainbow(uint8_t initialhue, uint8_t deltahue) {
+void sequentialRainbow(uint8_t initialhue, uint8_t deltahue, int msDelay) {
   uint8_t hue = initialhue + deltahue;
   for (int i = 0; i < NUM_LEDS; i++) {
     leds[i] = CHSV(hue, 255, 255);
     updateLEDs();
-    delay(100);
-    Serial.println(hue);
+    delay(msDelay);
     hue += deltahue;
   }
 }
 
-void chaseTheLED(int startingLED, int msDelay, int howManyTimes, CHSV color) {
-  for (int i = startingLED; i < (howManyTimes * NUM_LEDS); i++) {
-    leds[i] = color;
-    updateLEDs();
+void chaseTheLED(int startingLED, int msDelay, int howManyTimes, CHSV color) {    // howManyTimes isn't implemented yet.
+  for (int i = startingLED; i < NUM_LEDS; i++) {
+    setIndividualLED(i, color);
     FastLED.delay(msDelay);
     leds[i] = OFF;
   }
@@ -103,6 +94,7 @@ void chaseTheLED(int startingLED, int msDelay, int howManyTimes, CHSV color) {
 // Individual LED functions
 void setIndividualLED(int led, CHSV color) {
   leds[led] = color;
+  updateLEDs();
 }
 
 // Individual ringlight functions
@@ -121,6 +113,7 @@ void setRingLightHue(int whichLight, int hue) {
       led2_hue = hue;
       break;
   }
+  updateLEDs();
 }
 
 void setRingLightSaturation(int whichLight, int saturation) {
@@ -138,6 +131,7 @@ void setRingLightSaturation(int whichLight, int saturation) {
       led2_sat = saturation;
       break;
   }
+  updateLEDs();
 }
 
 void setRingLightValue(int whichLight, int value) {
@@ -155,5 +149,6 @@ void setRingLightValue(int whichLight, int value) {
       led2_val = value;
       break;
   }
+  updateLEDs();
 }
 
